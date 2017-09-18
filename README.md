@@ -215,3 +215,47 @@ new Vue({
 // }).$mount("#app");
 
 ```
+## 加载mock json数据
+第一步：创建一个json数据
+```
+{
+  "status":"0",
+  "msg":"",
+  "result":[
+    {
+      "productId":"10001",
+      "productName":"小米6",
+      "prodcutPrice":"2499",
+      "prodcutImg":"mi6.jpg"
+    },
+    ……
+  ]
+}
+```
+第二步：在dev-server.js中设置后台路由,提供给前台加载
+```
+var app = express()
+
+var router = express.Router() // 通过express拿到路由
+var goodsData = require('./../mock/goods.json') // 加载模拟json数据进来
+router.get("/goods", function (req, res, next) {
+  res.json(goodsData); // json()可以直接输出一个json
+})
+app.use(router) // 最后通过app.use使用这个路由
+
+```
+第三步：在页面中通过axios请求json数据
+```
+mounted: function () {
+  this.getGoodsList()
+},
+methods: {
+  // 获取商品列表
+  getGoodsList () {
+    axios.get('/goods').then((result) => {
+      var res = result.data
+      // this.goodsList = res.result
+    })
+  }
+}
+```
