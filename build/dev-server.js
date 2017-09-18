@@ -21,6 +21,14 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+
+var router = express.Router() // 通过express拿到路由
+var goodsData = require('./../mock/goods.json') // 加载模拟json数据进来
+router.get("/goods", function (req, res, next) {
+  res.json(goodsData); // json()可以直接输出一个json
+})
+app.use(router) // 最后通过app.use使用这个路由
+
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
