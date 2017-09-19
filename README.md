@@ -297,3 +297,14 @@ var ejs = require('ejs')
 app.engine('.html', ejs.__express)
 app.set('view engine', 'html');
 ```
+# windows平台下MongoDB安装和环境搭建
+- 高可扩展性
+- 分布式存储
+- 低成本
+- 结构灵活
+>mongoDB以json文档形式进行存储
+
++ 下载安装包或者压缩包
++ 添加db存储和日志存储文件
++ 添加服务、配置环境变量、启动Mongo
+[mongoDB安装配置参考](http://www.imooc.com/article/18438)
