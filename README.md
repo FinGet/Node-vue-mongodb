@@ -166,7 +166,7 @@ vue-resource的请求API是按照REST风格设计的，它提供了7种请求API
 发送请求时的options选项对象包含以下属性：
 
 | 参数        | 类型           | 描述  |
-| ------------- |:-------------:| -----:|
+| ------------- |:-------------:|:-----|
 | url      | string | 请求的URL |
 | method     | string     |   请求的HTTP方法，例如：'GET', 'POST'或其他HTTP方法 |
 | body | Object, FormData string      |    request body |
@@ -258,4 +258,21 @@ methods: {
     })
   }
 }
+```
+# 图片懒加载
+```
+npm install vue-lazyload --save
+```
+
+```
+// main.js 导入组件 可以在所有组件中使用
+import VueLazyLoad from 'vue-lazyload'
+Vue.use(VueLazyLoad, {
+  loading: 'static/loading-svg/loading-bars.svg', // 加载动画
+  try: 3 // default 1
+})
+```
+```
+// 使用
+<img v-lazy="'static/'+item.prodcutImg" alt="">
 ```
