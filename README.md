@@ -276,3 +276,12 @@ Vue.use(VueLazyLoad, {
 // 使用
 <img v-lazy="'static/'+item.prodcutImg" alt="">
 ```
+# 搭建基于Express框架运行环境
+```
+npm i -g express-generator
+```
+
+```
+// 在项目文件下
+express server
+```
