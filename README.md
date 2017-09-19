@@ -308,3 +308,279 @@ app.set('view engine', 'html');
 + 添加db存储和日志存储文件
 + 添加服务、配置环境变量、启动Mongo
 [mongoDB安装配置参考](http://www.imooc.com/article/18438)
+
+## mongoDB基本语法
+| SQL术语/概念   | MongoDB术语/概念 | 解释/说明  |
+| ------------- |:-------------   |:-----|
+| database      | database        | 数据库 |
+| table         | collection      |数据库表/集合|
+| row           | document        |数据记录行/文档|
+| column        | field           |数据字段/域  |
+| index         | index           |索引 |
+| table joins   |                 |表连接，MongoDB不支持 |
+| primary key   | primary key     |主键，mongodb自动将_id字段设置为主键   |
+
+- 插入文档
+- 更新文档
+- 删除文档
+- 查询文档
+
+```
+数据库常用命令
+
+1、Help查看命令提示
+
+ help
+
+  db.help();
+
+  db.yourColl.help();
+
+  db.youColl.find().help();
+
+  rs.help();
+
+2、切换/创建数据库
+
+ use yourDB;  当创建一个集合(table)的时候会自动创建当前数据库
+
+3、查询所有数据库
+
+ show dbs;
+
+4、删除当前使用数据库
+
+ db.dropDatabase();
+
+5、从指定主机上克隆数据库
+
+ db.cloneDatabase(“127.0.0.1”); 将指定机器上的数据库的数据克隆到当前数据库
+
+6、从指定的机器上复制指定数据库数据到某个数据库
+
+ db.copyDatabase("mydb", "temp", "127.0.0.1");将本机的mydb的数据复制到temp数据库中
+
+7、修复当前数据库
+
+ db.repairDatabase();
+
+8、查看当前使用的数据库
+
+ db.getName();
+
+ db; db和getName方法是一样的效果，都可以查询当前使用的数据库
+
+9、显示当前db状态
+
+ db.stats();
+
+10、当前db版本
+
+ db.version();
+
+11、查看当前db的链接机器地址
+
+ db.getMongo();
+```
+```
+Collection聚集集合
+
+1、创建一个聚集集合（table）
+
+ db.createCollection(“collName”, {size: 20, capped: 5, max: 100});
+
+2、得到指定名称的聚集集合（table）
+
+ db.getCollection("account");
+
+3、得到当前db的所有聚集集合
+
+ db.getCollectionNames();
+
+4、显示当前db所有聚集索引的状态
+
+ db.printCollectionStats();
+```
+```
+用户相关
+
+1、添加一个用户
+
+ db.addUser("name");
+
+ db.addUser("userName", "pwd123", true); 添加用户、设置密码、是否只读
+
+2、数据库认证、安全模式
+
+ db.auth("userName", "123123");
+
+3、显示当前所有用户
+
+ show users;
+
+4、删除用户
+
+ db.removeUser("userName");
+```
+```
+聚集集合查询
+
+1、查询所有记录
+
+db.userInfo.find();
+
+相当于：select* from userInfo;
+
+默认每页显示20条记录，当显示不下的情况下，可以用it迭代命令查询下一页数据。注意：键入it命令不能带“；”
+
+但是你可以设置每页显示数据的大小，用DBQuery.shellBatchSize= 50;这样每页就显示50条记录了。
+
+
+2、查询去掉后的当前聚集集合中的某列的重复数据
+
+db.userInfo.distinct("name");
+
+会过滤掉name中的相同数据
+
+相当于：select distict name from userInfo;
+
+
+3、查询age = 22的记录
+
+db.userInfo.find({"age": 22});
+
+相当于： select * from userInfo where age = 22;
+
+
+4、查询age > 22的记录
+
+db.userInfo.find({age: {$gt: 22}});
+
+相当于：select * from userInfo where age >22;
+
+
+5、查询age < 22的记录
+
+db.userInfo.find({age: {$lt: 22}});
+
+相当于：select * from userInfo where age <22;
+
+
+6、查询age >= 25的记录
+
+db.userInfo.find({age: {$gte: 25}});
+
+相当于：select * from userInfo where age >= 25;
+
+
+7、查询age <= 25的记录
+
+db.userInfo.find({age: {$lte: 25}});
+
+
+8、查询age >= 23 并且 age <= 26
+
+db.userInfo.find({age: {$gte: 23, $lte: 26}});
+ 
+
+9、查询name中包含 mongo的数据
+
+db.userInfo.find({name: /mongo/});
+
+//相当于%%
+
+select * from userInfo where name like ‘%mongo%’;
+
+
+10、查询name中以mongo开头的
+
+db.userInfo.find({name: /^mongo/});
+
+select * from userInfo where name like ‘mongo%’;
+
+
+11、查询指定列name、age数据
+
+db.userInfo.find({}, {name: 1, age: 1});
+
+相当于：select name, age from userInfo;
+
+当然name也可以用true或false,当用ture的情况下河name:1效果一样，如果用false就是排除name，显示name以外的列信息。
+
+
+12、查询指定列name、age数据, age > 25
+
+db.userInfo.find({age: {$gt: 25}}, {name: 1, age: 1});
+
+相当于：select name, age from userInfo where age >25;
+
+
+13、按照年龄排序
+
+升序：db.userInfo.find().sort({age: 1});
+
+降序：db.userInfo.find().sort({age: -1});
+
+
+14、查询name = zhangsan, age = 22的数据
+
+db.userInfo.find({name: 'zhangsan', age: 22});
+
+相当于：select * from userInfo where name = ‘zhangsan’ and age = ‘22’;
+
+
+15、查询前5条数据
+
+db.userInfo.find().limit(5);
+
+相当于：selecttop 5 * from userInfo;
+
+
+16、查询10条以后的数据
+
+db.userInfo.find().skip(10);
+
+相当于：select * from userInfo where id not in (
+
+selecttop 10 * from userInfo
+
+);
+
+
+17、查询在5-10之间的数据
+
+db.userInfo.find().limit(10).skip(5);
+
+可用于分页，limit是pageSize，skip是第几页*pageSize
+
+
+18、or与 查询
+
+db.userInfo.find({$or: [{age: 22}, {age: 25}]});
+
+相当于：select * from userInfo where age = 22 or age = 25;
+
+
+19、查询第一条数据
+
+db.userInfo.findOne();
+
+相当于：selecttop 1 * from userInfo;
+
+db.userInfo.find().limit(1);
+
+20、查询某个结果集的记录条数
+
+db.userInfo.find({age: {$gte: 25}}).count();
+
+相当于：select count(*) from userInfo where age >= 20;
+
+如果要返回限制之后的记录数量，要使用count(true)或者count(非0) 
+db.users.find().skip(10).limit(5).count(true);
+
+21、按照某列进行排序
+
+db.userInfo.find({sex: {$exists: true}}).count();
+
+相当于：select count(sex) from userInfo;
+```
