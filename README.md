@@ -285,3 +285,15 @@ npm i -g express-generator
 // 在项目文件下
 express server
 ```
+
+# ejs 代替jade
+```
+npm install ejs --save
+```
+```
+// server/app.js
+var ejs = require('ejs')
+
+app.engine('.html', ejs.__express)
+app.set('view engine', 'html');
+```
