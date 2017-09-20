@@ -588,3 +588,9 @@ db.userInfo.find({sex: {$exists: true}}).count();
 
 相当于：select count(sex) from userInfo;
 ```
+# 在webstrom中配置node启动调试环境
+```
+webstrom 菜单栏选择Run->Edit Configurations
+新建一个nodejs configuration
+javaScript file 选择 server/bin/www
+```
