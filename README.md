@@ -308,6 +308,7 @@ app.set('view engine', 'html');
 + 添加db存储和日志存储文件
 + 添加服务、配置环境变量、启动Mongo
 [mongoDB安装配置参考](http://www.imooc.com/article/18438)
+>mongoDB图形工具推荐mongoChef
 
 ## mongoDB基本语法
 | SQL术语/概念   | MongoDB术语/概念 | 解释/说明  |
@@ -324,6 +325,9 @@ app.set('view engine', 'html');
 - 更新文档
 - 删除文档
 - 查询文档
+
+> // 通过shell终端导入数据库表 (but 我没成功 原因待续……)
+> mongoimport -d mall -c goods --file c:\……
 
 ```
 数据库常用命令
