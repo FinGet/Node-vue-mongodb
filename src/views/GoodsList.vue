@@ -33,7 +33,7 @@
               <ul>
                 <li v-for="item in goodsList" :key="item.id">
                   <div class="pic">
-                    <a href="#"><img v-lazy="'static/'+item.prodcutImg" alt=""></a>
+                    <a href="#"><img v-lazy="'static/'+item.productImage" alt=""></a>
                   </div>
                   <div class="main">
                     <div class="name">{{item.productName}}</div>
@@ -105,8 +105,15 @@
       // 获取商品列表
       getGoodsList () {
         axios.get('/goods').then((result) => {
-          var res = result.data
-          this.goodsList = res.result
+          // var res = result.data
+          // this.goodsList = res.result
+          let res = result.data
+          if (res.status == "0") {
+            this.goodsList = res.result.list
+            // console.log(this.goodsList)
+          }else {
+            this.goodsList = []
+          }
         })
       },
       // 点击价格索引
