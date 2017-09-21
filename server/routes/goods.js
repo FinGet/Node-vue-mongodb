@@ -20,7 +20,16 @@ mongoose.connection.on("disconnected", function() {
 
 router.get("/", function (req, res, next) {
     // res.send('hello,goods list')
-    Goods.find({}, function (err, doc) { // obj.find(参数, 回调)
+    // req.param接收前端传过来的参数
+    let page = parseInt(req.param("page"))
+    // 通过req.param()取到的值都是字符串，而limit()需要一个数字作为参数
+    let pageSize = parseInt(req.param("pageSize"))
+    let sort = req.param("sort") //排序 
+    let params = {}
+    let skip = (page-1)*pageSize // 分页跳过几条
+    let goodsModel = Goods.find(params).skip(skip).limit(pageSize)
+    goodsModel.sort({'salePrice':sort}) // mongoDB是非关系型数据，查询条件必须是对象
+    goodsModel.exec(function (err, doc) { 
         if (err) {
             res.json({
                 status:'1',

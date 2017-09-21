@@ -721,3 +721,102 @@ proxyTable: {
   }
 }
 ```
+
+# 后端商品列表分页，排序
+```
+router.get("/", function (req, res, next) {
+    // res.send('hello,goods list')
+    // req.param接收前端传过来的参数
+    let page = parseInt(req.param("page"))
+    // 通过req.param()取到的值都是字符串，而limit()需要一个数字作为参数
+    let pageSize = parseInt(req.param("pageSize"))
+    let sort = req.param("sort") //排序 
+    let params = {}
+    let skip = (page-1)*pageSize // 分页跳过几条
+    let goodsModel = Goods.find(params).skip(skip).limit(pageSize)
+    goodsModel.sort({'salePrice':sort}) // mongoDB是非关系型数据，查询条件必须是对象 sort是mongoose提供的api
+    goodsModel.exec(function (err, doc) { 
+        if (err) {
+            res.json({
+                status:'1',
+                msg:err.message
+            })
+        }else {
+            res.json({
+                status:'0',
+                msg:'',
+                result:{
+                    count:doc.length,
+                    list:doc
+                }
+            })
+        }
+    })
+})
+// http://127.0.0.1:3000/goods?page=1&pageSize=5&sort=1
+```
+
+# 前端传递排序分页参数
+```
+getGoodsList () {
+  var param = {
+    page: this.page,
+    pageSize: this.pageSize,
+    sort: this.sortFlag ? 1 : -1
+  }
+  axios.get('/goods',{
+    params: param
+  }).then((result) => {
+    // var res = result.data
+    // this.goodsList = res.result
+    let res = result.data
+    if (res.status == "0") {
+      this.goodsList = res.result.list
+      // console.log(this.goodsList)
+    }else {
+      this.goodsList = []
+    }
+})
+```
+```
+// 安装 vue-infinite-scroll 实现滚动分页
+getGoodsList (flag) {
+  var param = {
+    page: this.page,
+    pageSize: this.pageSize,
+    sort: this.sortFlag ? 1 : -1
+  }
+  this.loading = true;
+  axios.get('/goods',{
+    params: param
+  }).then((result) => {
+    // var res = result.data
+    // this.goodsList = res.result
+    let res = result.data
+    this.loading = false;
+    if (res.status == "0") {
+      if (flag) {
+        this.goodsList = this.goodsList.concat(res.result.list) // 叠加，不是覆盖
+        if( res.result.count == 0) {
+          this.busy = true
+        } else {
+          this.busy = false
+        }
+      } else {
+        this.goodsList = res.result.list
+        this.busy = false
+      }
+      // console.log(this.goodsList)
+    }else {
+      this.goodsList = []
+    }
+  })
+},
+loadMore(){
+  this.busy = true;
+  setTimeout(() => {
+    this.page++;
+    this.getGoodsList(true);
+  }, 500);
+}
+```
