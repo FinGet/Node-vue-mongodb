@@ -844,3 +844,47 @@ if(priceLevel!='All'){
     }
 }
 ```
+
+> get方式取参 -> req.param()
+> post方式取参 -> req.body.productId
+
+# 添加到购物车(没考虑用户，直接定义了用户id)
+>只说思路，代码看server/routes/goodsjs 和server/models/user.js
+- 点击添加购物车，前端将productId传递到后端
+- 后端先获取当前登录的用户Id和前端传过来的商品Id（var userId = '100000077',productId = req.body.productId）
+- 先通过userId查询用户信息
+- 如果存在该用户，则遍历该用户购物车（cartList）中是否有这个商品,如果有，则商品数量+1,然后存进数据库
+```
+userDoc.cartList.forEach(function (item) {
+  if (item.productId == productId) {
+    goodsItem = item
+    item.productNum ++
+  }
+})
+```
+- 如果用户是第一添加该商品，则通过商品Id(productId)查询该商品信息，为啥不直接从前端传递呢？防止有人串改，而误存进数据库
+```
+Goods.findOne({productId:productId}, function (err1, doc) 
+```
+- 最后就是将这个商品信息加入用户购物车，数量为1
+```
+if (doc) {
+  doc.productNum = 1
+  doc.checked = 1
+  userDoc.cartList.push(doc)
+  userDoc.save(function (err2,doc2) {
+    if (err2) {
+      res.json({
+        status:'1',
+        msg:err2.message
+      })
+    }else {
+      res.json({
+        status:'0',
+        msg:'',
+        result:'suc'
+      })
+    }
+  })
+}
+```
