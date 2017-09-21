@@ -24,8 +24,24 @@ router.get("/", function (req, res, next) {
     let page = parseInt(req.param("page"))
     // 通过req.param()取到的值都是字符串，而limit()需要一个数字作为参数
     let pageSize = parseInt(req.param("pageSize"))
+    let priceLevel = req.param("priceLevel")
     let sort = req.param("sort") //排序 
     let params = {}
+    var priceGt = '',priceLte = ''
+    if(priceLevel!='All'){
+        switch (priceLevel){
+            case '0':priceGt = 0;priceLte=100;break;
+            case '1':priceGt = 100;priceLte=500;break;
+            case '2':priceGt = 500;priceLte=1000;break;
+            case '3':priceGt = 1000;priceLte=5000;break;
+        }
+        params = {
+            salePrice:{
+                $gt:priceGt,
+                $lte:priceLte
+            }
+        }
+    }
     let skip = (page-1)*pageSize // 分页跳过几条
     let goodsModel = Goods.find(params).skip(skip).limit(pageSize)
     goodsModel.sort({'salePrice':sort}) // mongoDB是非关系型数据，查询条件必须是对象
