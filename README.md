@@ -820,3 +820,27 @@ loadMore(){
   }, 500);
 }
 ```
+# 区间条件查询
+```
+// 在param中加一个参数
+priceLevel: this.priceChecked
+```
+```
+// 在api中处理参数，也可以直接在前端处理之后再传值
+// 全部查询，意思就是不加条件的查询，默认查询就是全部查询
+var priceGt = '',priceLte = ''
+if(priceLevel!='All'){
+    switch (priceLevel){
+        case '0':priceGt = 0;priceLte=100;break;
+        case '1':priceGt = 100;priceLte=500;break;
+        case '2':priceGt = 500;priceLte=1000;break;
+        case '3':priceGt = 1000;priceLte=5000;break;
+    }
+    params = {
+        salePrice:{
+            $gt:priceGt,
+            $lte:priceLte
+        }
+    }
+}
+```
