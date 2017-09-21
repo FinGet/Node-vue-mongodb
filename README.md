@@ -594,3 +594,103 @@ webstrom 菜单栏选择Run->Edit Configurations
 新建一个nodejs configuration
 javaScript file 选择 server/bin/www
 ```
+# 基于Express开发商品列表查询接口
+- 安装Mongoose `npm i mongoose --save`
+- 创建model
+- 创建路由
+- 基于mongoose，实现商品列表的查询功能
+```
+- server
+  - bin
+    - www
+  - models
+    - goods.js
+  - public
+    - images
+    - javascripts
+    - stylesheets
+  - routers
+    - goods.js
+    - index.js
+    - users.js
+  - views
+  - app.js
+```
+
++ 第一步:在server下新建一个models文件夹
++ 第二步:在models下新建一个goods.js
+  ```
+  var mongoose = require('mongoose') // 1、加载mongoose
+  var Schema = mongoose.Schema // 2、定义一个Schema
+  var produtSchema = new Schema({ // 3、通过schema定义表模型
+      "productId": String,
+      "productName": String,
+      "salePrice": Number,
+      "productImage": String
+  })
+
+  module.exports = mongoose.model('Good', produtSchema)
+  /*
+    在mongo集合中定义了goods集合,在这里就直接定义Good，它会自动加上's'去寻找，
+    如果在集合中定义的是good集合：
+    module.exports = mongoose.model('Good', produtSchema, 'good')
+  */
+  ```
++ 第三步:在routes里定义一个goods.js路由
+```
+var express = require('express') // 加载express模块
+var router = express.Router() // 通过express框架扩展出router
+var mongoose = require('mongoose') // 加载mongoose
+var Goods = require('../models/goods') // 加载模型表
+
+// 链接MongoDB数据库
+mongoose.connect('mongodb://127.0.0.1:27017/mall')
+// 链接成功
+mongoose.connection.on("connected", function() {
+    console.log("MongoDB connected success")
+})
+// 链接失败
+mongoose.connection.on("error", function() {
+    console.log("MongoDB connected error")
+})
+// 断开了
+mongoose.connection.on("disconnected", function() {
+    console.log("MongoDB connected disconnected")
+})
+
+router.get("/", function (req, res, next) { // next继续执行的函数
+    // res.send('hello,goods list')
+    Goods.find({}, function (err, doc) { // obj.find(参数, 回调)
+        if (err) {
+            res.json({
+                status:'1',
+                msg:err.message
+            })
+        }else {
+            res.json({
+                status:'0',
+                msg:'',
+                result:{
+                    count:doc.length,
+                    list:doc
+                }
+            })
+        }
+    })
+})
+
+// 输出路由，不然无法访问到goods路由
+module.exports = router
+
+```
++ 第四步:在app.js里面设置goods一级路由
+```
+var goods = require('./routes/goods')
+app.use('/goods', goods);
+```
++ 最后
+```
+node server/bin/www
+// http://localhost:3000/goods // 可以加载出数据
+```
+>module.exports是nodejs规范
