@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueLazyLoad from 'vue-lazyload'
+import infiniteScroll from 'vue-infinite-scroll'
 
 import './assets/css/base.css'
 import './assets/css/checkout.css'
@@ -15,6 +16,7 @@ Vue.use(VueLazyLoad, {
   loading: 'static/loading-svg/loading-bars.svg', // 加载动画
   try: 3 // default 1
 })
+Vue.use(infiniteScroll)
 
 /* eslint-disable no-new */
 new Vue({
