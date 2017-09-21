@@ -619,23 +619,23 @@ javaScript file 选择 server/bin/www
 
 + 第一步:在server下新建一个models文件夹
 + 第二步:在models下新建一个goods.js
-  ```
-  var mongoose = require('mongoose') // 1、加载mongoose
-  var Schema = mongoose.Schema // 2、定义一个Schema
-  var produtSchema = new Schema({ // 3、通过schema定义表模型
-      "productId": String,
-      "productName": String,
-      "salePrice": Number,
-      "productImage": String
-  })
+```
+var mongoose = require('mongoose') // 1、加载mongoose
+var Schema = mongoose.Schema // 2、定义一个Schema
+var produtSchema = new Schema({ // 3、通过schema定义表模型
+    "productId": String,
+    "productName": String,
+    "salePrice": Number,
+    "productImage": String
+})
 
-  module.exports = mongoose.model('Good', produtSchema)
-  /*
-    在mongo集合中定义了goods集合,在这里就直接定义Good，它会自动加上's'去寻找，
-    如果在集合中定义的是good集合：
-    module.exports = mongoose.model('Good', produtSchema, 'good')
-  */
-  ```
+module.exports = mongoose.model('Good', produtSchema)
+/*
+  在mongo集合中定义了goods集合,在这里就直接定义Good，它会自动加上's'去寻找，
+  如果在集合中定义的是good集合：
+  module.exports = mongoose.model('Good', produtSchema, 'good')
+*/
+```
 + 第三步:在routes里定义一个goods.js路由
 ```
 var express = require('express') // 加载express模块
@@ -694,3 +694,30 @@ node server/bin/www
 // http://localhost:3000/goods // 可以加载出数据
 ```
 >module.exports是nodejs规范
+
+# 前端怎样去通过后端接口加载渲染商品列表数据
++ 第一步:在goodsList里请求数据
+```
+getGoodsList () {
+  axios.get('/goods').then((result) => {
+    // var res = result.data
+    // this.goodsList = res.result
+    let res = result.data
+    if (res.status == "0") {
+      this.goodsList = res.result.list
+      // console.log(this.goodsList)
+    }else {
+      this.goodsList = []
+    }
+  })
+}
+```
+>注意：前端请求的端口并不是后台的端口，所以存在跨越问题，而axios不能跨越
+>代理办法:config/index.js
+```
+proxyTable: {
+  '/goods':{
+    target:'http://localhost:3000' // 内部转发到3000这个端口
+  }
+}
+```
