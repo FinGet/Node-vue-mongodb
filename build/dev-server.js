@@ -27,7 +27,7 @@ var app = express()
 // router.get("/goods", function (req, res, next) {
 //   res.json(goodsData); // json()可以直接输出一个json
 // })
-app.use(router) // 最后通过app.use使用这个路由
+//app.use(router) // 最后通过app.use使用这个路由
 
 var compiler = webpack(webpackConfig)
 
