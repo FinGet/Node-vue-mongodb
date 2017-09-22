@@ -888,3 +888,78 @@ if (doc) {
   })
 }
 ```
+#用户登录
+```
+// 前端
+login() {
+  //console.log(1)
+  if (!this.userName || !this.userPwd) {
+    this.errorTip = true
+    return
+  }
+  axios.post("/users/login",{ // 通过post方式更安全
+    userName: this.userName,
+    userPwd: this.userPwd
+  }).then((response) => {
+    let res = response.data
+    if (res.status == '0') {
+      //console.log(1)
+      this.loginModalFlag = false
+      this.nickName = res.result.userName
+      // console.log(res)
+    }else {
+      this.errorTip = true
+    }
+  })
+}
+// 后端
+router.post("/login", function (req,res,next) {
+  var param = { // 通过req.body获取前端传过来的用户名和密码
+    userName:req.body.userName,
+    userPwd:req.body.userPwd
+  }
+  User.findOne(param, function (err,doc) { // 在数据库中查询是否存在该用户
+    if(err){
+        res.json({
+            status:"1",
+            msg:err.message
+        });
+    }else{
+      if(doc){
+        res.cookie("userId",doc.userId,{
+          path:'/',
+          maxAge:1000*60*60
+        });
+        res.cookie("userName",doc.userName,{
+          path:'/',
+          maxAge:1000*60*60
+        });
+        //req.session.user = doc;
+        res.json({ // 最后返回一个用户名，前端呈现在页面上
+          status:'0',
+          msg:'',
+          result:{
+            userName:doc.userName
+          }
+        })
+      }
+    }
+  })
+})
+```
+# 用户登出
+```
+router.post("/logout", function(req, res, next) {
+  // 清除cookie
+  res.cookie("userId", "",{
+    path:"/",
+    maxAge: -1
+  })
+  res.json({
+    status:'0',
+    msg:'',
+    result:''
+  })
+})
+```
+>前端调用接口，将nickName=''就ok

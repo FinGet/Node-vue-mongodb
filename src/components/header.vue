@@ -28,9 +28,9 @@
       </div>
       <div class="navbar-right-container" style="display: flex;">
         <div class="navbar-menu-container">
-          <span class="navbar-link"></span>
-          <a href="javascript:void(0)" class="navbar-link" >Login</a>
-          <a href="javascript:void(0)" class="navbar-link" >Logout</a>
+          <span class="navbar-link" v-text="nickName" v-if="nickName"></span>
+          <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName" >Login</a>
+          <a href="javascript:void(0)" @click="logOut" class="navbar-link" v-if="nickName">Logout</a>
           <div class="navbar-cart-container">
             <span class="navbar-cart-count"></span>
             <a class="navbar-link navbar-cart-link" href="/#/cart">
@@ -42,11 +42,11 @@
         </div>
       </div>
     </div>
-    <div class="md-modal modal-msg md-modal-transition md-show" >
+    <div class="md-modal modal-msg md-modal-transition" v-bind:class="{'md-show':loginModalFlag}" >
       <div class="md-modal-inner">
         <div class="md-top">
           <div class="md-title">Login in</div>
-          <button class="md-close" >Close</button>
+          <button class="md-close" @click="loginModalFlag=false" >Close</button>
         </div>
         <div class="md-content">
           <div class="confirm-tips">
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="md-overlay"></div>
+    <div class="md-overlay" v-if="loginModalFlag" @click="loginModalFlag=false"></div>
   </header>
 </template>
 <script type="text/ecmascript-6">
@@ -81,21 +81,40 @@
       return {
         userName:'',
         userPwd:'',
-        errorTip:false
+        errorTip:false,
+        loginModalFlag:false,
+        nickName:''
       }
     },
     methods:{
+      // 登录
       login() {
+        //console.log(1)
+        if (!this.userName || !this.userPwd) {
+          this.errorTip = true
+          return
+        }
         axios.post("/users/login",{
           userName: this.userName,
           userPwd: this.userPwd
         }).then((response) => {
           let res = response.data
           if (res.status == '0') {
-            console.log(1)
-            this.errorTip = false
+            //console.log(1)
+            this.loginModalFlag = false
+            this.nickName = res.result.userName
+            // console.log(res)
           }else {
             this.errorTip = true
+          }
+        })
+      },
+      // 登出
+      logOut() {
+        axios.post("/users/logout").then((response) => {
+          let res = response.data
+          if (res.status == '0') {
+            this.nickName = ''
           }
         })
       }
