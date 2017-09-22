@@ -86,7 +86,26 @@
         nickName:''
       }
     },
+    mounted(){
+      this.checkLogin();
+    },
     methods:{
+      // 如果登录过了，在cookie时间内，刷新页面都会查找cookie中的用户名
+      checkLogin(){
+        axios.get("/users/checkLogin").then((response)=>{
+            var res = response.data;
+            // var path = this.$route.pathname;
+            if(res.status=="0"){
+              this.nickName = res.result;
+              //this.$store.commit("updateUserInfo",res.result);
+              this.loginModalFlag = false;
+            }else{
+              if(this.$route.path!="/goods"){
+                this.$router.push("/goods");
+              }
+            }
+        })
+      },
       // 登录
       login() {
         //console.log(1)

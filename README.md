@@ -963,3 +963,58 @@ router.post("/logout", function(req, res, next) {
 })
 ```
 >前端调用接口，将nickName=''就ok
+
+# 全局的拦截（未登录就不能添加购物车）
+server/app.js
+>主要就是通过路由判断
+```
+// 全局拦截
+app.use(function(req, res, next) {
+  if(req.cookies.userId) {
+    next() // 无操作，直接向下执行
+  }else {
+    // 白名单
+    // req.originalUrl.indexOf('/goods/list')>-1 req.path == '/goods/list'
+    if(req.originalUrl.indexOf('/goods/list')>-1 || req.originalUrl == '/users/login' || req.originalUrl == '/users/logout') {
+      next()
+    }else {
+      res.json({
+        status:'10001',
+        msg:'当前未登录',
+        result:''
+      })
+    }
+  }
+})
+```
+# 登录校验
+>已经登录的用户，会存下cookie，当页面刷新时，去获取cookie，将用户名呈现在页面上
+```
+// api
+router.get("/checkLogin", function (req,res,next) {
+  if(req.cookies.userId){
+      res.json({
+        status:'0',
+        msg:'',
+        result:req.cookies.userName || ''
+      });
+  }else{
+    res.json({
+      status:'1',
+      msg:'未登录',
+      result:''
+    });
+  }
+})
+```
+```
+// 如果登录过了，在cookie时间内，刷新页面都会查找cookie中的用户名
+checkLogin(){
+  axios.get("/users/checkLogin").then((response)=>{
+    var res = response.data;
+    if(res.status=="0"){
+      this.nickName = res.result;
+    }
+  })
+}
+```
