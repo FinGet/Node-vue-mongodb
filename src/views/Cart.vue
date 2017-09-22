@@ -62,7 +62,7 @@
               <li v-for="item in cartList" :key="item.id">
                 <div class="cart-tab-1">
                   <div class="cart-item-check">
-                    <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':item.checked=='1'}">
+                    <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check': item.checked=='1'}">
                       <svg class="icon icon-ok">
                         <use xlink:href="#icon-ok"></use>
                       </svg>
@@ -90,11 +90,11 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total"></div>
+                  <div class="item-price-total">{{item.salePrice*item.productNum}}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn">
+                    <a href="javascript:;" class="item-edit-btn" @click="delCartConfirm(item.productId)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -132,8 +132,8 @@
     <Modal :mdShow="modalConfirm" @close="closeModal">
       <p slot="message">你确认要删除此条数据吗?</p>
       <div slot="btnGroup">
-        <a class="btn btn--m" href="javascript:;" >确认</a>
-        <a class="btn btn--m btn--red" href="javascript:;" >关闭</a>
+        <a class="btn btn--m" href="javascript:;" @click="delCart">确认</a>
+        <a class="btn btn--m btn--red" href="javascript:;" @click="modalConfirm = false" >关闭</a>
       </div>
     </Modal>
     <nav-footer></nav-footer>
@@ -150,6 +150,7 @@
 			return{
 				cartList:[],
 				delItem:{},
+				productId:'',
 				modalConfirm:false
 			}
 		},
@@ -175,7 +176,25 @@
 			},
 			closeModal(){
 				this.modalConfirm = false;
-			}
+			},
+      delCartConfirm(productId) {
+        this.modalConfirm = true
+        this.productId = productId
+      },
+      // 删除购物车
+      delCart() {
+			  console.log(1)
+        axios.post("/users/cartDel",{
+          productId:this.productId
+        }).then((response) => {
+          console.log(response)
+          let res = response.data
+          if (res.status == '0') {
+            this.modalConfirm = false
+            this.init()
+          }
+        })
+      }
 		}
 	}
 </script>
