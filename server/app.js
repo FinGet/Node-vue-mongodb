@@ -24,6 +24,25 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 全局拦截
+app.use(function(req, res, next) {
+  if(req.cookies.userId) {
+    next()
+  }else {
+    // 白名单
+    // req.originalUrl.indexOf('/goods/list')>-1 req.path == '/goods/list'
+    if(req.originalUrl.indexOf('/goods/list')>-1 || req.originalUrl == '/users/login' || req.originalUrl == '/users/logout') {
+      next()
+    }else {
+      res.json({
+        status:'10001',
+        msg:'当前未登录',
+        result:''
+      })
+    }
+  }
+})
+
 // 一级路由
 app.use('/', index);
 app.use('/users', users);
