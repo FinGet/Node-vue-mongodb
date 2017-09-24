@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total">{{item.salePrice*item.productNum}}</div>
+                  <div class="item-price-total">{{item.salePrice*item.productNum | currency('$')}}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
@@ -109,8 +109,8 @@
           <div class="cart-foot-inner">
             <div class="cart-foot-l">
               <div class="item-all-check">
-                <a href="javascipt:;">
-                  <span class="checkbox-btn item-check-btn" >
+                <a href="javascipt:;" @click="toogleCheckAll">
+                  <span class="checkbox-btn item-check-btn" :class="{'check':checkAllFlag}">
                       <svg class="icon icon-ok"><use xlink:href="#icon-ok"/></svg>
                   </span>
                   <span>Select all</span>
@@ -119,7 +119,7 @@
             </div>
             <div class="cart-foot-r">
               <div class="item-total">
-                Item total: <span class="total-price"></span>
+                Item total: <span class="total-price">{{totalPrice | currency('$')}}</span>
               </div>
               <div class="btn-wrap">
                 <a class="btn btn--red">Checkout</a>
@@ -154,6 +154,27 @@
 				modalConfirm:false
 			}
 		},
+		computed: {
+		  checkAllFlag() {
+        return this.checkedCount == this.cartList.length;
+      },
+      checkedCount(){
+        var i = 0;
+        this.cartList.forEach((item)=>{
+          if(item.checked=='1')i++;
+        })
+        return i;
+      },
+      totalPrice() {
+        var money = 0;
+        this.cartList.forEach((item)=>{
+          if(item.checked=='1'){
+            money += parseFloat(item.salePrice)*parseInt(item.productNum)
+          }
+        })
+        return money;
+      }
+    },
 		components: {
       NavHeader,
       NavFooter,
@@ -215,7 +236,22 @@
         }).then((response) => {
 			    let res = response.data
         })
+      },
+      toogleCheckAll() {
+        var flag = !this.checkAllFlag
+        this.cartList.forEach((item) => {
+          item.checked = flag?'1':'0'
+        })
+        axios.post("/users/editCheckAll", {
+          checkAll:flag
+        }).then((response) => {
+          let res = response.data
+          if (res.status == '0') {
+            console.log('1')
+          }
+        })
       }
+
 		}
 	}
 </script>
