@@ -220,7 +220,7 @@
       editCart(flag, item) {
 			  if (flag=='add') {
 			    item.productNum ++
-        } else if(flag == 'minus') {
+        } else if(flag == 'minu') {
 			    if (item.productNum<=1){
 			      return
           }else {
