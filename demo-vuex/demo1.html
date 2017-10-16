@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script src="../node_modules/vuex/dist/vuex.min.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+		<h2>{{msg}}</h2>
+		<counter></counter>	
+  </div>
+  <script>
+		const counter = {
+			template: `
+				<div>{{count}}</div>
+			`,
+			computed: {
+				count() {
+					return this.$store.state.count
+				}
+			}
+		}
+		const store = new Vuex.Store({
+			state: {
+				count: 10
+			}
+		})
+    new Vue({
+      el: "#app",
+			store, // 需要将store实例引入 es6会解析成store: store
+      data() {
+        return {
+					msg: 'vuex的使用'
+        }
+      },
+			components: {
+				counter
+			}
+    })
+
+  </script>
+</body>
+
+</html>
