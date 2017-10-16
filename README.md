@@ -148,6 +148,103 @@ jump () {
   }
 }
 ```
+
+## Vuex
+>Vuex是一个专为Vue.js应用程序开发的状态管理模式
+当我们构建一个中大型的单页面应用程序时，Vuex可以更好的帮助我们在组件外部统一管理状态。
+- State
+  >State是唯一的数据源。
+  单一状态树
+  ```
+  const Counter = {
+    template: '<div>{{count}}</div>',
+    computed: {
+      count() {
+        return this.$store.state.count
+      }
+    }
+  }
+  ```
+- Getters
+  >通过Getters可以派生出一些新的状态
+  ```
+  const store = new Vuex.Store({
+    state: {
+      todos: [
+        {id: 1, text: '...', done: true},
+        {id: 2, text: '...', done: false}
+      ]
+    },
+    getters: {
+      doneTodos: state => {
+        return state.todos.filter(todo => todo.done)
+      }
+    }
+  })
+  ```
+- Mutations
+  >更改Vuex的store中的状态的唯一方法是提交mutation
+  ```
+  const store = new Vuex.Store({
+    state: {
+      count: 1
+    },
+    mutations: {
+      increment (state) {
+        // 变更状态
+        state.count ++
+      }
+    }
+  })
+  ```
+  ```
+  store.commit("increment")
+  ```
+- Actions
+  > + Action 提交的是mutation,而不是直接变更状态
+  > + Action 可以包含任意异步操作
+  ```
+  const store = new Vuex.Store({
+    state: {
+      count: 0
+    },
+    mutations: {
+      increment (state) {
+        // 变更状态
+        state.count ++
+      }
+    },
+    actions: {
+      increment (context) { // context 全局定义Vuex自带
+        context.commit('increment')
+      }
+    }
+  })
+  ```
+- Modules
+  >面对复杂的应用程序， 当管理的状态比较多时，我们需要将Vuex的store对象分割成模块(modules)
+  ```
+  const moduleA = {
+    state: {……},
+    mutations: {……},
+    actions: {……},
+    getters: {……}
+  }
+  const moduleB = {
+    state: {……},
+    mutations: {……},
+    actions: {……}
+  }
+  const store = new Vuex.Store({
+    modules: {
+      a: moduleA,
+      b: moduleB
+    }
+  })
+  ```
+### 项目结构
+tree [-adfghilnopqrstuvxACDFNS] [-L level [-R]] [-H baseHREF] [-T title] [-o filename] [--nolinks] [-P pattern] [-I pattern] [--inodes] [--device] [--noreport] [--dirsfirst] [--version] [--help] [--filelimit #] [directory ...]
+
 ## vue-resource
 
 支持的HTTP方法
