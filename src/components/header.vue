@@ -32,7 +32,7 @@
           <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName" >Login</a>
           <a href="javascript:void(0)" @click="logOut" class="navbar-link" v-if="nickName">Logout</a>
           <div class="navbar-cart-container">
-            <span class="navbar-cart-count"></span>
+            <span class="navbar-cart-count" v-if="cartCount>0">{{cartCount}}</span>
             <a class="navbar-link navbar-cart-link" href="/cart">
               <svg class="navbar-cart-logo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -76,6 +76,7 @@
 <script type="text/ecmascript-6">
   import './../assets/css/login.css'
   import axios from 'axios'
+  import {mapState} from 'vuex'
   export default{
     data () {
       return {
@@ -90,9 +91,13 @@
       this.checkLogin();
     },
     computed: {
-      nickName() {
-        return this.$store.state.nickName
-      }
+      ...mapState(['nickName', 'cartCount'])
+//      nickName() {
+//        return this.$store.state.nickName
+//      },
+//      cartCount() {
+//        return this.$store.state.cartCount
+//      }
     },
     methods:{
       // 如果登录过了，在cookie时间内，刷新页面都会查找cookie中的用户名
@@ -102,8 +107,9 @@
             if(res.status=="0"){
               // this.nickName = res.result;
               this.$store.commit("updateUserInfo", res.result)
+              this.getCartCount()
               this.loginModalFlag = false
-            } 
+            }
         })
       },
       // 登录
@@ -121,8 +127,10 @@
           if (res.status == '0') {
             //console.log(1)
             this.loginModalFlag = false
-            this.nickName = res.result.userName
+            this.$store.commit("updateUserInfo", res.result.userName)
+            // this.nickName = res.result.userName
             // console.log(res)
+            this.getCartCount()
           }else {
             this.errorTip = true
           }
@@ -135,6 +143,13 @@
           if (res.status == '0') {
             this.$store.commit("updateUserInfo",res.result.userName);
           }
+        })
+      },
+      getCartCount() {
+        axios.get("/users/getCartCount").then((response) => {
+          let res = response.data
+          // console.log(res)
+          this.$store.commit("initCartCount",res.result)
         })
       }
     }
