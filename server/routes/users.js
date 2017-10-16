@@ -72,6 +72,33 @@ router.get("/checkLogin", function (req,res,next) {
     });
   }
 })
+// 查询购物车商品数量
+router.get("/getCartCount", function (req, res, next) {
+  if (req.cookies && req.cookies.userId) {
+    var userId = req.cookies.userId
+    User.findOne({userId}, function (err, doc) {
+      if (err) {
+        res.json({
+          status:'1',
+          msg: err.message,
+          result: ''
+        })
+      } else {
+        var cartList = doc.cartList
+        let cartCount = 0
+        cartList.map(function (item) {
+          cartCount += parseInt(item.productNum)
+        })
+        res.json({
+          status: '0',
+          msg: '',
+          result: cartCount
+        })
+      }
+    })
+  }
+
+})
 // 查询当前用户的购物车数据
 router.get("/cartList", function(req, res, next) {
   var userId = req.cookies.userId
@@ -277,7 +304,7 @@ router.post("/delAddress", function (req, res, next) {
 })
 // 生成订单
 router.post("/payMent", function (req, res, next) {
-  var userId = req.cookies.userId, 
+  var userId = req.cookies.userId,
       orderTotal = req.body.orderTotal,
       addressId = req.body.addressId
   User.findOne({userId: userId}, function (err, doc) {
@@ -305,7 +332,7 @@ router.post("/payMent", function (req, res, next) {
       // 创建订单id
       var r1 = Math.floor(Math.random() * 10);
       var r2 = Math.floor(Math.random() * 10);
-      
+
       var platform = '622'
       var sysDate = new Date().Format('yyyyMMddhhmmss')
       var createDate = new Date().Format('yyyy-MM-dd hh:mm:ss')
