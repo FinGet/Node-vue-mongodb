@@ -198,7 +198,7 @@ jump () {
   })
   ```
   ```
-  store.commit("increment")
+  this.$store.commit("increment")
   ```
 - Actions
   > + Action 提交的是mutation,而不是直接变更状态
@@ -243,7 +243,13 @@ jump () {
   })
   ```
 ### 项目结构
-tree [-adfghilnopqrstuvxACDFNS] [-L level [-R]] [-H baseHREF] [-T title] [-o filename] [--nolinks] [-P pattern] [-I pattern] [--inodes] [--device] [--noreport] [--dirsfirst] [--version] [--help] [--filelimit #] [directory ...]
+- --store
+  - --index.js        // 我们组装模块并导出store的地方
+  - --actions.js      // 根级别的 action
+  - --mutations.js    // 根级别的 mutation
+  - --modules
+    - --cart.js       // 购物车模块
+    - --products.js   // 产品模块
 
 ## vue-resource
 

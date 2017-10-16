@@ -82,12 +82,17 @@
         userName:'',
         userPwd:'',
         errorTip:false,
-        loginModalFlag:false,
-        nickName:''
+        loginModalFlag:false
+        // nickName:''
       }
     },
     mounted(){
       this.checkLogin();
+    },
+    computed: {
+      nickName() {
+        return this.$store.state.nickName
+      }
     },
     methods:{
       // 如果登录过了，在cookie时间内，刷新页面都会查找cookie中的用户名
@@ -95,8 +100,10 @@
         axios.get("/users/checkLogin").then((response)=>{
             var res = response.data;
             if(res.status=="0"){
-              this.nickName = res.result;
-            }
+              // this.nickName = res.result;
+              this.$store.commit("updateUserInfo", res.result)
+              this.loginModalFlag = false
+            } 
         })
       },
       // 登录
@@ -126,7 +133,7 @@
         axios.post("/users/logout").then((response) => {
           let res = response.data
           if (res.status == '0') {
-            this.nickName = ''
+            this.$store.commit("updateUserInfo",res.result.userName);
           }
         })
       }
